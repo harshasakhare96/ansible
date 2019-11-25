@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+     - name: Install few services
+       yum: name={{ item }} state=present
+       with_items:
+               - httpd
+               - mariadb-server
+               - vim
+
+     - name: Start the services
+       service: name={{ item }} state=started
+       with_items:
+               - httpd
+               - mariadb
+     - name: make a directory
+       command: mkdir /var/www/wordsinfinite.ml
+     
+     - name: make a conf file
+       copy: 
+         src: /home/ansible/wordsinfinite.conf.ml
+         dest: /etc/httpd/conf.d/ 
+         
+                
+  handlers:
+     - name: restart httpd service
+       become: true
+       service: name=httpd state=restarted
+
